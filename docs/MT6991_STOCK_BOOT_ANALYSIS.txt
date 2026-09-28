@@ -1,0 +1,121 @@
+=======================================
+===== MT6991 STOCK BOOT ANALYSIS =====
+=======================================
+
+Device :
+Redmi K80 Ultra (dali)
+
+SoC :
+MediaTek MT6991 (Dimensity 9400+)
+
+Source :
+OS3.0.305.0.WONCNXM (dali-ota_full, Android 16, payload)
+Fingerprint :
+Redmi/dali/dali:16/BP2A.250605.031.A3/16OS3.1.260710.200938533.MTPECN.S:user/release-keys
+
+Analyzed images :
+- boot.img
+- vendor_boot.img
+- dtbo.img
+- vendor_ramdisk00 / vendor_ramdisk01
+- vendor_dlkm / system_dlkm / odm_dlkm
+
+=======================================
+===== BOOT IMAGES =====================
+=======================================
+
+boot.img (67108864 bytes, header v4)
+- kernel : Image.lz4, 17299611 bytes -> 36866560 bytes (lz4 legacy frame)
+- ramdisk : none
+
+vendor_boot.img (67108864 bytes, header v4)
+- cmdline : bootopt=64S3,32N2,64N2 erofs.reserved_pages=64
+- dtb : 532322 bytes
+- vendor_ramdisk00 : 45059190 bytes -> 93009408 bytes (lz4), 1252 cpio entries
+- vendor_ramdisk01 (recovery) : 16541181 bytes -> 26016768 bytes (lz4), 665 cpio entries
+
+dtbo.img : 8388608 bytes
+init_boot.img : 8388608 bytes
+
+=======================================
+===== FSTAB (stock vendor_boot) =======
+=======================================
+
+first_stage_ramdisk/fstab.mt6991
+
+Logical (dynamic) partitions : system, system_ext, vendor, product,
+odm, odm_dlkm, system_dlkm, vendor_dlkm, mi_ext
+- erofs with ext4 fallback, avb=vbmeta_system / avb=vbmeta
+
+userdata : f2fs, aes-256-xts + inlinecrypt_optimized
+metadata : f2fs
+
+Physical partitions mounted : rescue(cache), protect1, protect2, nvdata,
+md_sec, nvcfg, persist
+No display_dbi partition (difference from dash)
+
+=======================================
+===== STOCK PARTITIONS ===============
+=======================================
+
+boot        67108864
+vendor_boot 67108864
+dtbo        8388608
+init_boot   8388608
+
+dynamic partition group : 11800674304 bytes
+group members : odm, odm_dlkm, product, system, system_dlkm,
+                system_ext, vendor, vendor_dlkm, mi_ext
+no pvmfw partition
+
+AVB : vbmeta, vbmeta_system, vbmeta_vendor
+
+=======================================
+===== KERNEL MODULES =================
+=======================================
+
+vendor_ramdisk  : lib/modules/modules.load (249 modules)
+                  lib/modules/modules.load.recovery (263 modules)
+vendor_dlkm     : 284 *.ko, modules.load lists 262 modules
+                  (device-specific: xiaomi_touch_*.ko, panel-*.ko, gps_pwr.ko,
+                   gps_scp.ko, mi_gps_pwr.ko)
+system_dlkm     : 78 *.ko
+odm_dlkm        : no modules
+
+=======================================
+===== DEVICE-SPECIFIC BLOBS ==========
+=======================================
+
+Camera tuning stubs : daliov08f10ultra_mipi_raw, daliov20bfront_mipi_raw,
+                      daliovx8000wide_mipi_raw
+Touch firmware      : dali_fts_thp_config.ini, dali_gtp_thp_config*.ini,
+                      focaltech_ts_fw_dali.bin, goodix_cfg_group_dali.bin,
+                      goodix_firmware_dali.bin
+Charger             : odm/etc/charger/BAA_config_dali.json
+Overlay             : vendor/overlay/FrameworkResOverlay_daliCN.apk
+HAL uuid map        : vendor/etc/hal_uuid_map_dali.xml
+
+=======================================
+===== MI_DISPLAY INTERFACE ===========
+=======================================
+
+Userspace :
+odm/lib64/hw/displayfeature.default.so (vendor.xiaomi.hardware.displayfeature_aidl)
+- /dev/mi_display/disp_feature
+- MI_DISP_IOCTL_* ioctls
+- /sys/class/mi_display/disp-DSI-0/wp_info, /sys/class/mi_display/disp-DSI-0/mipi_rw
+
+Kernel :
+mediatek-drm.ko (vendor_ramdisk)
+- implements mi_display / disp_feature (FOD, AOD, HBM, doze brightness ...)
+
+Driver source : MiCode/MTK_kernel_device_modules @ bsp-dali-v-oss
+  drivers/gpu/drm/mediatek/mediatek_v2/mi_disp/  (mi_disp_feature.c, mi_disp_file.c, ...)
+  include/uapi/drm/mi_disp.h  <- UAPI header (real dali one, NOT the dash variant)
+
+UAPI header : display/drm/mi_disp.h (kernel-headers)
+  - copied from MTK_kernel_device_modules/include/uapi/drm/mi_disp.h
+  - differs from dash's mi_disp.h: feature ids 33+ are COLORMODE_NOTIFY..VIDLE (not
+    POWERSTATUS/SYSTEM_BUILD_VERSION); ioctl 0x0D = SET_COUNT_INFO (not GET_MANUFACTURER_INFO);
+    adds ioctl 0x10 SET_FP_UNLOCK_STATE; drops fod_ui_ready_state enum.
+  - version 1.0 (MI_DISP_FEATURE_VERSION_MAJOR=1, MINOR=0)
