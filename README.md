@@ -1,28 +1,29 @@
-Device Specifications for Redmi K80 Ultra (红米 K80 至尊版)
-==========================================================
+Copyright (C) 2025 The LineageOS Project
 
-Basic                   | Spec Sheet
------------------------:|:--------------------------------------------------------------------------------
-CPU                     | Octa-core MediaTek Dimensity 9400+ (MT6991)
-Chipset                 | Mediatek MT6991
-Display                 | 1280 x 2772 (ro.vendor.display.default_resolution)
-Density                 | 480 dpi (ro.sf.lcd_density)
-Shipped Android Version | 16.0
-Stock ROM               | OS3.0.305.0.WONCNXM
-Build                   | Redmi/dali/dali:16/BP2A.250605.031.A3/16OS3.1.260710.200938533.MTPECN.S
-Model                   | 25060RK16C
+# Device tree for the Redmi K80 Ultra (dali)
 
-The tree layout follows the mt6991 reference device tree
-(github.com/Kyuuju2/android_device_xiaomi_dash, lineage-23.2).
+The Redmi K80 Ultra (codenamed _"dali"_) is a high-end flagship smartphone from Xiaomi.
+It was released in June 2025.
 
-Values in this tree were verified against the dali stock OTA:
-- init/fstab.mt6991 (extracted from stock vendor_boot; no display_dbi partition on dali)
-- partition sizes (stock payload; dali has no pvmfw)
-- module load lists (stock vendor_boot + vendor_dlkm/system_dlkm images)
-- proprietary-files.txt (validated file-by-file against stock vendor/odm/system_ext images)
-- PRODUCT_MODEL / fingerprint / attestation props (stock build.prop + OTA metadata)
+This device tree is based on the
+[dash reference tree](https://github.com/Kyuuju2/android_device_xiaomi_dash/tree/lineage-23.2)
+(Redmi Turbo 5 Max / POCO X8 Pro Max, MT6991), with dali-specific values
+verified against the stock OS3.0.305.0.WONCNXM firmware.
 
-Kernel: device/xiaomi/dali-kernel carries the prebuilt kernel artifacts
-(Image.lz4, dtb/mt6991.dtb, dtbo.img, vendor_ramdisk/vendor_dlkm/system_dlkm
-modules, kernel-uapi-headers.tar.gz). Kernel source:
-MiCode/Xiaomi_Kernel_OpenSource, branch bsp-dali-v-oss (6.6.56).
+## Device Specifications
+
+|                   Basic | Spec Sheet                                                                   |
+| ----------------------: | :--------------------------------------------------------------------------- |
+|                     CPU | Octa-core (1x3.73 GHz Cortex-X925 & 3x3.3 GHz Cortex-X4 & 4x2.4 GHz Cortex-A720) |
+|                 Chipset | MediaTek Dimensity 9400+ (MT6991)                                            |
+|                     GPU | Immortalis-G925                                                              |
+|                  Memory | 12/16 GB RAM (LPDDR5X)                                                       |
+| Shipped Android Version | 15 with HyperOS 2                                                            |
+|                 Storage | 256/512 GB / 1 TB (UFS 4.1)                                                  |
+|                 Battery | Non-removable, Si/C Li-Po 7410 mAh                                           |
+|                 Display | 1280 x 2772 pixels, 6.83 inches, 144 Hz, OLED, Dolby Vision, HDR10+          |
+|                  Camera | 50 MP (Primary, OIS) + 8 MP (Ultra-wide)                                     |
+
+## Device Picture
+
+![Redmi K80 Ultra](https://cdn.cnbj0.fds.api.mi-img.com/b2c-shopapi-pms/pms_1750232024.04268021.png)
